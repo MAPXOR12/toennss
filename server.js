@@ -1,123 +1,139 @@
-/**
-* This is the main Node.js server script for your project
-* Check out the two endpoints this back-end API provides in fastify.get and fastify.post below
-*/
+const Websocket = require("ws")
+const express = require("express")
+const events = require("events");
+var usernames = []
+var n = 0
+const sleep = async (ms) => new Promise((re) => setTimeout(re , ms) )
 
-const path = require("path");
+let statues = ["idle" , "dnd" , "online"]
+const app = express()
 
-// Require the fastify framework and instantiate it
-const fastify = require("fastify")({
-  // Set this to true for detailed logging:
-  logger: false
-});
+app.get("/" , (req , res) => res.send("OK"))
 
-// ADD FAVORITES ARRAY VARIABLE FROM TODO HERE
+app.listen(3000)
 
+const client = class extends events {
 
-// Setup our static files
-fastify.register(require("fastify-static"), {
-  root: path.join(__dirname, "public"),
-  prefix: "/" // optional: default '/'
-});
+constructor(token , id) {
+super();
+this.closed = false
+this.first = true
+this.id = id
+this.token = token
+this.ws = null
 
-// fastify-formbody lets us parse incoming forms
-fastify.register(require("fastify-formbody"));
-
-// point-of-view is a templating manager for fastify
-fastify.register(require("point-of-view"), {
-  engine: {
-    handlebars: require("handlebars")
-  }
-});
-
-// Load and parse SEO data
-const seo = require("./src/seo.json");
-if (seo.url === "glitch-default") {
-  seo.url = `https://${process.env.PROJECT_DOMAIN}.glitch.me`;
+this.seq = 0
+this.status = statues[Math.floor(Math.random()*statues.length)]
+this._onclose(true)
 }
 
-/**
-* Our home page route
-*
-* Returns src/pages/index.hbs with data built into it
-*/
-fastify.get("/", function(request, reply) {
-  
-  // params is an object we'll pass to our handlebars template
-  let params = { seo: seo };
-  
-  // If someone clicked the option for a random color it'll be passed in the querystring
-  if (request.query.randomize) {
-    
-    // We need to load our color data file, pick one at random, and add it to the params
-    const colors = require("./src/colors.json");
-    const allColors = Object.keys(colors);
-    let currentColor = allColors[(allColors.length * Math.random()) << 0];
-    
-    // Add the color properties to the params object
-    params = {
-      color: colors[currentColor],
-      colorError: null,
-      seo: seo
-    };
-  }
-  
-  // The Handlebars code will be able to access the parameter values and build them into the page
-  reply.view("/src/pages/index.hbs", params);
-});
 
-/**
-* Our POST route to handle and react to form submissions 
-*
-* Accepts body data indicating the user choice
-*/
-fastify.post("/", function(request, reply) {
-  
-  // Build the params object to pass to the template
-  let params = { seo: seo };
-  
-  // If the user submitted a color through the form it'll be passed here in the request body
-  let color = request.body.color;
-  
-  // If it's not empty, let's try to find the color
-  if (color) {
-    // ADD CODE FROM TODO HERE TO SAVE SUBMITTED FAVORITES
-    
-    // Load our color data file
-    const colors = require("./src/colors.json");
-    
-    // Take our form submission, remove whitespace, and convert to lowercase
-    color = color.toLowerCase().replace(/\s/g, "");
-    
-    // Now we see if that color is a key in our colors object
-    if (colors[color]) {
-      
-      // Found one!
-      params = {
-        color: colors[color],
-        colorError: null,
-        seo: seo
-      };
-    } else {
-      
-      // No luck! Return the user value as the error property
-      params = {
-        colorError: request.body.color,
-        seo: seo
-      };
-    }
-  }
-  
-  // The Handlebars template will use the parameter values to update the page with the chosen color
-  reply.view("/src/pages/index.hbs", params);
-});
+_onmessage(msg) {
+let m;
+try {m = JSON.parse(msg)} catch { return; }
 
-// Run the server and report out to the logs
-fastify.listen(process.env.PORT, function(err, address) {
-  if (err) {
-    fastify.log.error(err);
-    process.exit(1);
+if(m.s) { this.seq = m.s }
+
+if(m.op === 10) {
+this.inv = setInterval(() => this.ws.send(JSON.stringify({"op":1,"d": this.seq})) , m.d.heartbeat_interval)
+let auth = (token) => {
+  this.ws.send(`{"op":2,"d":{"token":"${token}","capabilities":125,"properties":{"os":"Windows","browser":"Chrome","device":"","system_locale":"ar-AE","browser_user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36","browser_version":"91.0.4472.101","os_version":"10","referrer":"https://discord.com/channels/793203630978498560/853614357865562123","referring_domain":"discord.com","referrer_current":"","referring_domain_current":"","release_channel":"stable","client_build_number":87709,"client_event_source":null},"presence":{"status":"${this.status}","since":0,"activities":[],"afk":false},"compress":false,"client_state":{"guild_hashes":{},"highest_last_message_id":"0","read_state_version":0,"user_guild_settings_version":-1}}}`)
+}
+return auth(this.token)
+}
+
+
+if(m.t === "READY") {
+
+this.closed = false
+var data = m.d
+
+let user = data.user 
+
+if(!usernames.includes(user.username)){
+usernames.unshift(user.username)
+}else{
+n++
+console.log(n)
+}
+
+
+
+user.verified = data.user.verified
+user.require_verified = data.required_action ? true : false
+user.require_phone = data.required_action === "REQUIRE_VERIFIED_PHONE" ? true : false
+
+console.log("[" + this.id + "] " + user.username + " is ready" + ` | ${user.require_verified ? `Require ${user.require_phone ? "Phone" : "Email"}` : "Not Required"}`)
+
+if(this.first) { this.emit("done" , user); this.first = false };
+
+this.ws.send(`{
+  "op": 3,
+  "d": {
+    "since": 91879201,
+    "activities": [],
+    "status": "${this.status}",
+    "afk": false
   }
-  console.log(`Your app is listening on ${address}`);
-  fastify.log.info(`server listening on ${address}`);
-});
+}`)
+
+}
+
+}
+
+async _onclose(ms) {
+
+if(ms) { await sleep(ms) }
+
+try { this.ws.close() } catch { }
+try { clearInterval(this.inv) } catch { }
+
+this.ws = new Websocket("wss://gateway.discord.gg/" , [])
+this.ws.on("message" , (msg) => this._onmessage(msg))
+this.ws.on("close" , () => { 
+if(!this.closed) { console.log("closed "+ this.id); }
+this.closed = true
+this.seq = 0
+if(this.first) { this.emit("done" , false); this.first = false };
+this._onclose(10000)
+})
+this.ws.on("error" , (err) => this._onerror(err))
+}
+
+
+_onerror(err) {
+this._onclose()
+}
+
+}
+
+
+
+
+
+
+
+const fs = require("fs")
+let data = fs.readFileSync('./tokens.txt', {encoding:'utf8', flag:'r'})
+
+let id = 0
+let clients = []
+
+
+let func = async () => {
+for(let token of data.split("\n")){
+if(!clients.find(d => d.token === token)) {
+id++
+let c = new client(token.trim() , id)
+clients.push(c)
+await new Promise((re) =>{
+c.once("done" , () =>{
+re();
+})
+})
+}
+
+}
+}
+
+func();
