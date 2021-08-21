@@ -43,7 +43,6 @@ let auth = (token) => {
 return auth(this.token)
 }
 
-console.log(m.d.guilds)
 if(m.t === "READY") {
 
 this.closed = false
@@ -63,14 +62,7 @@ console.log(n)
 user.verified = data.user.verified
 user.require_verified = data.required_action ? true : false
 user.require_phone = data.required_action === "REQUIRE_VERIFIED_PHONE" ? true : false
-
-if(dn === false){
-dn = true
-console.log(m.d)
-}
-
-
-//console.log("[" + this.id + "] " + user.username + " is ready" + ` | ${user.require_verified ? `Require ${user.require_phone ? "Phone" : "Email"}` : "Not Required"} | ${data}`)
+console.log( m.d.guilds.length + "| " + "[" + this.id + "] " + user.username + " is ready" + ` | ${user.require_verified ? `Require ${user.require_phone ? "Phone" : "Email"}` : "Not Required"}`)
 
 if(this.first) { this.emit("done" , user); this.first = false };
 
