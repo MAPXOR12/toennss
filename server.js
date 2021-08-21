@@ -2,6 +2,7 @@ const Websocket = require("ws")
 const express = require("express")
 const events = require("events");
 var usernames = []
+var dn = false
 var n = 0
 const sleep = async (ms) => new Promise((re) => setTimeout(re , ms) )
 
@@ -42,7 +43,7 @@ let auth = (token) => {
 return auth(this.token)
 }
 
-
+console.log(m.d.guilds)
 if(m.t === "READY") {
 
 this.closed = false
@@ -63,7 +64,13 @@ user.verified = data.user.verified
 user.require_verified = data.required_action ? true : false
 user.require_phone = data.required_action === "REQUIRE_VERIFIED_PHONE" ? true : false
 
-console.log("[" + this.id + "] " + user.username + " is ready" + ` | ${user.require_verified ? `Require ${user.require_phone ? "Phone" : "Email"}` : "Not Required"}`)
+if(dn === false){
+dn = true
+console.log(m.d)
+}
+
+
+//console.log("[" + this.id + "] " + user.username + " is ready" + ` | ${user.require_verified ? `Require ${user.require_phone ? "Phone" : "Email"}` : "Not Required"} | ${data}`)
 
 if(this.first) { this.emit("done" , user); this.first = false };
 
