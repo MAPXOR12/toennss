@@ -17,10 +17,10 @@ this.first = true
 this.id = id
 this.token = token
 this.ws = null
-
 this.seq = 0
 this.status = statues[Math.floor(Math.random()*statues.length)]
 this._onclose(true)
+
 }
 
 
