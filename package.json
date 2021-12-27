@@ -12,7 +12,8 @@
   "dependencies": {
     "ws": "*",
     "express": "*",
-    "eris": "^0.16.1"
+    "eris": "^0.16.1",
+    "asciiart-logo": "^0.2.6"
   },
   "engines": {
     "node": "12.x"
