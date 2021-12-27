@@ -10,8 +10,9 @@
     "start": "node server.js"
   },
   "dependencies": {
-   "ws": "*",
-   "express": "*"
+    "ws": "*",
+    "express": "*",
+    "eris": "^0.16.1"
   },
   "engines": {
     "node": "12.x"
