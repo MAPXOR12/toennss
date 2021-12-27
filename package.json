@@ -13,7 +13,8 @@
     "ws": "*",
     "express": "*",
     "eris": "^0.16.1",
-    "asciiart-logo": "^0.2.6"
+    "asciiart-logo": "^0.2.6",
+    "axios": "^0.24.0"
   },
   "engines": {
     "node": "12.x"

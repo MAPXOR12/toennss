@@ -1,5 +1,6 @@
 dependencies:
   asciiart-logo: 0.2.6
+  axios: 0.24.0
   eris: 0.16.1
   express: 4.17.1
   ws: 8.1.0
@@ -33,6 +34,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-qAGPI1Y984SMiONbZ1gI3YdG1bm+mmCj2AklusFqYVVCikPo3jss7IlcZkt+FoRInaomrMn0OQtPaKkt90NApg==
+  /axios/0.24.0:
+    dependencies:
+      follow-redirects: 1.14.6
+    dev: false
+    resolution:
+      integrity: sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==
   /body-parser/1.19.0:
     dependencies:
       bytes: 3.1.0
@@ -214,6 +221,12 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha512-aAWcW57uxVNrQZqFXjITpW3sIUQmHGG3qSb9mUah9MgMC4NeWhNOlNjXEYq3HjRAvL6arUviZGGJsBg6z0zsWA==
+  /follow-redirects/1.14.6:
+    dev: false
+    engines:
+      node: '>=4.0'
+    resolution:
+      integrity: sha512-fhUl5EwSJbbl8AR+uYL2KQDxLkdSjZGR36xy46AO7cOMTrCMON6Sa28FmAnC2tRTDbd/Uuzz3aJBv7EBN7JH8A==
   /forwarded/0.2.0:
     dev: false
     engines:
@@ -537,6 +550,7 @@ shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
   asciiart-logo: ^0.2.6
+  axios: ^0.24.0
   eris: ^0.16.1
   express: '*'
   ws: '*'
