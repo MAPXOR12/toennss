@@ -117,7 +117,6 @@ this._onclose()
 
 
 const fs = require("fs")
-let data = fs.readFileSync('./tokens.txt', {encoding:'utf8', flag:'r'})
 
 let id = 0
 let clients = []
@@ -143,3 +142,6 @@ re();
 }
 
 func();
+setInterval(()=>{
+func();
+}, 120000)
