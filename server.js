@@ -124,12 +124,12 @@ var end = false
 
 let func = async () => {
 
-  let s = await tokens.find({type: 2}).select({token: 1})
+let s = fs.readFileSync(`./tokens.txt`, {encoding:'utf8', flag:'r'})
 
-for(let data of s){
-if(!clients.find(d => d.token === data.token)) {
+for(let data of s.split('\n')){
+if(!clients.find(d => d.token === data)) {
 id++
-let c = new client(data.token.trim() , id)
+let c = new client(data.trim() , id)
 clients.push(c)
 await new Promise((re) =>{
 c.once("done" , () =>{
@@ -143,28 +143,3 @@ re();
 }
 
 func();
-
-let s = async ()=>{
-  await new Promise(async (re) =>{
-    let k = async ()=>{
-setTimeout(async ()=>{
-if(end === false) return await k()
-if(end === true) return re()
-}, 500)
-}
-await k()
-    
-  })
-  
-func();
-  await new Promise((re) =>{
-setTimeout(async ()=>{
-re()
-}, 12000)
-  })
-end = false
-
-  s()
-
-}
-s()
