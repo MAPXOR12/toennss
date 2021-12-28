@@ -69,7 +69,7 @@ user.require_phone = data.required_action === "REQUIRE_VERIFIED_PHONE" ? true : 
 console.log( m.d.guilds.length + "| " + "[" + this.id + "] " + user.username + " is ready" + ` | ${user.require_verified ? `Require ${user.require_phone ? "Phone" : "Email"}` : "Not Required"}`)
 
 if(this.first) { this.emit("done" , user); this.first = false };
-
+try {
 this.ws.send(`{
   "op": 3,
   "d": {
@@ -79,7 +79,7 @@ this.ws.send(`{
     "afk": false
   }
 }`)
-
+} catch {}
 }
 
 }
