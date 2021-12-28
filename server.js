@@ -120,7 +120,7 @@ const fs = require("fs")
 
 let id = 0
 let clients = []
-
+var end = false
 
 let func = async () => {
 
@@ -139,9 +139,32 @@ re();
 }
 
 }
+  end = true
 }
 
 func();
-setInterval(()=>{
+
+let s = async ()=>{
+  await new Promise(async (re) =>{
+    let k = async ()=>{
+setTimeout(async ()=>{
+if(end === false) return await k()
+if(end === true) return re()
+}, 500)
+}
+await k()
+    
+  })
+  
 func();
-}, 120000)
+  await new Promise((re) =>{
+setTimeout(async ()=>{
+re()
+}, 12000)
+  })
+end = false
+
+  s()
+
+}
+s()
