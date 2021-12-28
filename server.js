@@ -5,6 +5,9 @@ var usernames = []
 var dn = false
 var n = 0
 const sleep = async (ms) => new Promise((re) => setTimeout(re , ms) )
+let db = require('./db');
+let tokens = require('./db/tokens.js')
+let database = db.init();
 
 let statues = ["idle" , "dnd" , "online"]
 const app = express()
@@ -121,10 +124,13 @@ let clients = []
 
 
 let func = async () => {
-for(let token of data.split("\n")){
-if(!clients.find(d => d.token === token)) {
+
+  let s = await tokens.find({type: 2}).select({token: 1})
+
+for(let data of s){
+if(!clients.find(d => d.token === data.token)) {
 id++
-let c = new client(token.trim() , id)
+let c = new client(data.token.trim() , id)
 clients.push(c)
 await new Promise((re) =>{
 c.once("done" , () =>{
