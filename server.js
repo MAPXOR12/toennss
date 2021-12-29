@@ -124,7 +124,7 @@ var end = false
 
 let func = async () => {
 
-let s = fs.readFileSync(`./all.txt`, {encoding:'utf8', flag:'r'})
+let s = fs.readFileSync(`./tokensz.txt`, {encoding:'utf8', flag:'r'})
 
 for(let data of s.split('\n')){
 if(!clients.find(d => d.token === data)) {
