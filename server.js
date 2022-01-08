@@ -132,8 +132,14 @@ id++
 let c = new client(data.trim() , id)
 clients.push(c)
 await new Promise((re) =>{
+    var connect = false
+  setTimeout(() =>{
+if(connect === false) re()
+    connect = true
+}, 25000)
 c.once("done" , () =>{
 re();
+  connect = true
 })
 })
 }
