@@ -39,7 +39,11 @@ try {m = JSON.parse(msg)} catch { return; }
 
 if(m.s) { this.seq = m.s }
 
+if(m.op === 1) {
+this.ws.send(JSON.stringify({"op":1,"d": this.seq}));
+} else
 if(m.op === 10) {
+  console.log(m.d.heartbeat_interval)
 this.inv = setInterval(() => this.ws.send(JSON.stringify({"op":1,"d": this.seq})) , m.d.heartbeat_interval)
 let auth = (token) => {
   this.ws.send(`{"op":2,"d":{"token":"${token}","capabilities":125,"properties":{"os":"Windows","browser":"Chrome","device":"","system_locale":"ar-AE","browser_user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36","browser_version":"91.0.4472.101","os_version":"10","referrer":"https://discord.com/channels/793203630978498560/853614357865562123","referring_domain":"discord.com","referrer_current":"","referring_domain_current":"","release_channel":"stable","client_build_number":87709,"client_event_source":null},"presence":{"status":"${this.status}","since":0,"activities":[],"afk":false},"compress":false,"client_state":{"guild_hashes":{},"highest_last_message_id":"0","read_state_version":0,"user_guild_settings_version":-1}}}`)
@@ -47,8 +51,10 @@ let auth = (token) => {
 return auth(this.token)
 }
 
+if(m.t === "READY_SUPPLEMENTAL") {
+this.emit("done" , true);
+} else
 if(m.t === "READY") {
-
 this.closed = false
 var data = m.d
 
@@ -80,6 +86,9 @@ this.ws.send(`{
   }
 }`)
 } catch {}
+} else {
+m = undefined;
+msg = undefined;
 }
 
 }
@@ -132,14 +141,15 @@ id++
 let c = new client(data.trim() , id)
 clients.push(c)
 await new Promise((re) =>{
-    var connect = false
+      var connect = false
   setTimeout(() =>{
 if(connect === false) re()
     connect = true
 }, 25000)
 c.once("done" , () =>{
 re();
-  connect = true
+    connect = true
+
 })
 })
 }
