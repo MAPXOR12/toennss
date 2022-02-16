@@ -15,7 +15,7 @@ const app = express()
 app.get("/" , (req , res) => res.send("OK"))
 
 app.listen(3000)
-const maxbot = require("./maxbot")
+//const maxbot = require("./maxbot")
 
 const client = class extends events {
 
@@ -39,9 +39,6 @@ try {m = JSON.parse(msg)} catch { return; }
 
 if(m.s) { this.seq = m.s }
 
-if(m.op === 1) {
-this.ws.send(JSON.stringify({"op":1,"d": this.seq}));
-} else
 if(m.op === 10) {
 this.inv = setInterval(() => this.ws.send(JSON.stringify({"op":1,"d": this.seq})) , m.d.heartbeat_interval)
 let auth = (token) => {
@@ -50,10 +47,8 @@ let auth = (token) => {
 return auth(this.token)
 }
 
-if(m.t === "READY_SUPPLEMENTAL") {
-this.emit("done" , true);
-} else
 if(m.t === "READY") {
+
 this.closed = false
 var data = m.d
 
@@ -85,9 +80,6 @@ this.ws.send(`{
   }
 }`)
 } catch {}
-} else {
-m = undefined;
-msg = undefined;
 }
 
 }
@@ -140,15 +132,15 @@ id++
 let c = new client(data.trim() , id)
 clients.push(c)
 await new Promise((re) =>{
-      var connect = false
+        var connect = false
   setTimeout(() =>{
 if(connect === false) re()
     connect = true
 }, 25000)
 c.once("done" , () =>{
-re();
-    connect = true
+      connect = true
 
+re();
 })
 })
 }
