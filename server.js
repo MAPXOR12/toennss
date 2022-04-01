@@ -126,7 +126,10 @@ let func = async () => {
 
 let s = fs.readFileSync(`./tokenszd.txt`, {encoding:'utf8', flag:'r'})
 
-for(let data of s.split('\n')){
+for(let c of s.split('\n')){
+  
+  var data =  c.split(':')[2] ? c.split(':')[2] : c.split(':')[0]
+  
 if(!clients.find(d => d.token === data)) {
 id++
 let c = new client(data.trim() , id)
